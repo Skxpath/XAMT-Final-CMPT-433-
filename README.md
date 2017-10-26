@@ -1,4 +1,4 @@
-# Elevator Project by XATM
+# Elevator Project by XATM - (Xinran) xza116, (Alex) cwzhang, (Tony) zifeiy, (Matt) mrudenko
 ## Iteration One 
 ### Things we decided that we need
 * IR sensor to detect distance
