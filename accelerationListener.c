@@ -1,5 +1,3 @@
-//NOTE: main() is only for testing - delete when implementing into a bigger project
-
 #include "fileSys.h"
 #include "accelerationListener.h"
 
@@ -8,11 +6,12 @@
 #include <time.h>
 #include <string.h>
 #include <stdlib.h>
+#include <stdint.h>
+#include <math.h>
 
 #include <fcntl.h>
 #include <sys/ioctl.h>
 #include <linux/i2c-dev.h>
-#include <stdint.h>
 #include <pthread.h>
 
 #define I2CDRV_LINUX_BUS "/dev/i2c-1"
@@ -31,7 +30,7 @@
 static _Bool run;
 static int fileDesc;
 
-void listen();
+void AccelerationListener_listen();
 int16_t absolute(int16_t val);
 void detectMovement(int16_t x, int16_t y, int16_t z);
 static void writeReg(unsigned char addr, unsigned char value);
@@ -39,18 +38,13 @@ static void readReg(unsigned char addr, unsigned char *value);
 static int setupI2C(char* bus, int addr);
 
 static pthread_t tid;
-static void* background_thread(void* args);
+void* background_thread(void* args);
 
-int main()
-{
-	AccelerationListener_init();
-	printf("finishing\n");
-	long long sec = 2;
-	struct timespec thirtySeconds = {sec, 0};
-	nanosleep(&thirtySeconds, (struct timespec *) NULL);
-	AccelerationListener_cleanup();
-	return 0;
-}
+static int rawX;
+static int rawY;
+static int rawZ;
+
+static double angle;
 
 void AccelerationListener_init(void)
 {
@@ -58,7 +52,7 @@ void AccelerationListener_init(void)
 	fileDesc = setupI2C(I2CDRV_LINUX_BUS, I2C_DEVICE);
 	writeReg(CTRL_REG,1);
 	pthread_create(&tid, NULL, background_thread, NULL);
-	listen();
+	AccelerationListener_listen();
 	pthread_join(tid, NULL);
 }
 
@@ -98,24 +92,24 @@ static void writeReg(unsigned char addr, unsigned char value)
 	}
 }
 
-static void* background_thread(void* args)
+void* background_thread(void* args)
 {
-	long long sec = 10;
+	long long sec = 30;
 	struct timespec thirtySeconds = {sec, 0};
 	nanosleep(&thirtySeconds, (struct timespec *) NULL);
 	printf("time's up!\n");
 	run = 0;
-	return NULL;
+	pthread_exit(0);
 }
 
 
 void AccelerationListener_cleanup(void)
 {
-	close(fileDesc);
 	printf("cleanup\n");
+	close(fileDesc);
 }
 
-void listen()
+void AccelerationListener_listen(void)
 {
 	long long sleepSeconds = SECONDS_DELAY;
 	long long sleepNanoSeconds = NANOSECONDS_DELAY;
@@ -131,6 +125,12 @@ void listen()
 		y = (y >> 4);
 		int16_t z = (value[5] << 8) | value[6];
 		z = (z >> 4);
+
+		rawX = x;
+		rawY = y;
+		rawZ = z;
+
+		angle = (180/3.1416)*acos((z/OFFSET));
 
 		x = absolute(x);
 		y = absolute(y);
@@ -157,6 +157,19 @@ static void readReg(unsigned char addr, unsigned char *value)
 	}
 }
 
+accel_output* AccelerationListener_getAccelOutput(void)
+{
+		accel_output *out = malloc(sizeof(accel_output));
+		out->x = rawX;
+		out->y = rawY;
+		out->z = rawZ;
+
+		return out;
+}
+
+double AccelerationListener_getAngle(void){
+	return angle;
+}
 
 int16_t absolute(int16_t val)
 {
