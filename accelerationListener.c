@@ -8,6 +8,7 @@
 #include <stdlib.h>
 #include <stdint.h>
 #include <math.h>
+#include <stdbool.h>
 
 #include <fcntl.h>
 #include <sys/ioctl.h>
@@ -27,7 +28,7 @@
 #define NANOSECONDS_DELAY 400000000
 #define SECONDS_DELAY 0
 
-static _Bool run;
+static _Bool run = true;
 static int fileDesc;
 
 void AccelerationListener_listen();
@@ -53,7 +54,6 @@ void AccelerationListener_init(void)
 	writeReg(CTRL_REG,1);
 	pthread_create(&tid, NULL, background_thread, NULL);
 	AccelerationListener_listen();
-	pthread_join(tid, NULL);
 }
 
 static int setupI2C(char* bus, int addr)
@@ -105,6 +105,7 @@ void* background_thread(void* args)
 
 void AccelerationListener_cleanup(void)
 {
+	run = false;
 	printf("cleanup\n");
 	close(fileDesc);
 }

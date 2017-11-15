@@ -1,4 +1,4 @@
-SRC_C = main.c fileSys.c accelerationListener.c bbgServer.c
+SRC_C = main.c fileSys.c accelerationListener.c bbgServer.c bbgClient.c
 
 PUBDIR = $(HOME)/cmpt433/public/myApps
 OUTDIR = $(PUBDIR)
