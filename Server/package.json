@@ -1,0 +1,9 @@
+{
+  "name": "CMPT-433-Assignment-3",
+  "version": "0.0.1",
+  "description": "433 assignment 3 server",
+  "dependencies": {
+    "mime": "^2.0.3",
+    "netcat": "^1.3.2"
+  }
+}
