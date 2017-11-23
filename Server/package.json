@@ -1,9 +1,10 @@
 {
-  "name": "CMPT-433-Assignment-3",
+  "name": "CMPT-433-Final-Project",
   "version": "0.0.1",
-  "description": "433 assignment 3 server",
+  "description": "433 final project node.js srever",
   "dependencies": {
     "mime": "^2.0.3",
-    "netcat": "^1.3.2"
+    "netcat": "^1.3.2",
+    "socket.io": "^2.0.4"
   }
 }

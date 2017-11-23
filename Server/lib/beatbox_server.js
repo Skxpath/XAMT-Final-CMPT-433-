@@ -2,6 +2,10 @@ var socketio = require('socket.io');
 var io;
 var socket;
 
+//UDP Socket information to connect to our BBG
+var uPORT = 17433;
+var uHOST = '192.168.7.2';
+
 exports.listen = function(server) {
 	io = socketio.listen(server);
 
@@ -78,14 +82,12 @@ getUptime();
 
 };
 
-//Creates a UDP socket that connects to our BeagleBone (client)
-var uPORT = 12345;
-var uHOST = '192.168.7.2';
 var dgram = require('dgram');
 var client = dgram.createSocket('udp4');
 
 function incVolume() {
-  var message = new Buffer('incvolume');
+  //var message = new Buffer('incvolume');
+	var message = new Buffer('help');
   sendToBBG(message);
 }
 
