@@ -12,7 +12,7 @@
 #include <errno.h>
 #include <arpa/inet.h>
 
-#define SERV_PORT 17433
+#define SERV_PORT 8088
 #define MAX_MESSAGE_LENGTH 1024
 #define SERV_ADDR "192.168.7.1"
 

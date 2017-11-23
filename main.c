@@ -10,10 +10,11 @@
 
 int main()
 {
-	AccelerationListener_init();
+	//AccelerationListener_init();
   bbgServer_startListening();
   bbgClient_init();
-  sleep(30);
+  printf("bbgServer and Client successfully started\n");
+  sleep(300);
 	printf("finishing\n");
 	long long sec = 2;
 	//struct timespec thirtySeconds = {sec, 0};
@@ -21,6 +22,6 @@ int main()
 	sleep(sec);
   bbgClient_cleanup();
   bbgServer_cleanup();
-	AccelerationListener_cleanup();
+	//AccelerationListener_cleanup();
 	return 0;
 }
