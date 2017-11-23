@@ -53,7 +53,7 @@ static void* bbgClient_thread(void *args)
 
     // Connect to server & check if connection is successful
     if(connect(socket_desc, (struct sockaddr *) &servaddr, sizeof(servaddr)) < 0) {
-      perror("ERROR: Cannot connect to server.\n");
+      //perror("ERROR: Cannot connect to server.\n");
       sleep(1);
       continue;
     }
