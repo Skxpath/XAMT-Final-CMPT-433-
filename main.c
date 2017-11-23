@@ -10,22 +10,6 @@
 
 int main()
 {
-<<<<<<< HEAD
-  printf("bbg server started!");
-  bbgServer_startListening();
-
-	//AccelerationListener_init();
-	//printf("finishing\n");
-	//long long sec = 2;
-	//struct timespec thirtySeconds = {sec, 0};
-	//nanosleep(&thirtySeconds, (struct timespec *) NULL);
-	//sleep(sec);
-	//AccelerationListener_cleanup();
-
-  sleep(500);
-  bbgServer_cleanup();
-  printf("bbg server terminated...");
-=======
 	AccelerationListener_init();
   bbgServer_startListening();
   bbgClient_init();
@@ -38,6 +22,5 @@ int main()
   bbgClient_cleanup();
   bbgServer_cleanup();
 	AccelerationListener_cleanup();
->>>>>>> 52cacacd6a11f51ff09a099387fab5ec86b8a06d
 	return 0;
 }
