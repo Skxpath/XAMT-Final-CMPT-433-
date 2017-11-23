@@ -36,6 +36,7 @@ static void processCommand(char* command, int socketDescriptor, struct sockaddr_
 
 void bbgServer_startListening(void)
 {
+	printf("bbg server started from bbgServer.c!");
 	pthread_create(&s_threadId, NULL, &listeningThread, NULL);
 }
 

@@ -9,14 +9,19 @@
 
 int main()
 {
+  printf("bbg server started!");
   bbgServer_startListening();
-	AccelerationListener_init();
-	printf("finishing\n");
-	long long sec = 2;
+
+	//AccelerationListener_init();
+	//printf("finishing\n");
+	//long long sec = 2;
 	//struct timespec thirtySeconds = {sec, 0};
 	//nanosleep(&thirtySeconds, (struct timespec *) NULL);
-	sleep(sec);
-	AccelerationListener_cleanup();
+	//sleep(sec);
+	//AccelerationListener_cleanup();
+
+  sleep(500);
   bbgServer_cleanup();
+  printf("bbg server terminated...");
 	return 0;
 }
