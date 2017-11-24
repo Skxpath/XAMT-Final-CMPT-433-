@@ -15,28 +15,33 @@ var socket;
 var uPORT = 17433;
 var uHOST = '192.168.7.2';
 
-//Sends a UDP packet to BBG
-function sendToBBG(message) {
-  client.send(message, 0, message.length, uPORT, uHOST, function(err, bytes) {
-     if (err) throw err;
-});
-}
-
 //Definition of our socket to send and listen to messages from the BBG. (Where the BBG sends to, so we can hear it)
-//TODO: Change to TCP
-var dgram = require('dgram');
-var client = dgram.createSocket('udp4');
+var net = require('net');
+var client = new net.Socket();
+client.connect(uPORT, uHOST, function() {
 
-client.bind(12345, "192.168.7.1");
+    console.log('CONNECTED TO: ' + uHOST + ':' + uPORT);
+    // Write a message to the socket as soon as the client is connected, the server will receive it as message from the client
+    client.write('help');
+
+});
 
 client.on('message', function(msg) {
-  //console.log(`${msg}`);
+  console.log(`${msg}`);
 
 strcast = msg.toString();
 
 	processCommand(strcast);
 
 });
+
+//Sends a UDP packet to BBG
+function sendToBBG(message) {
+	client.write(message);
+  //client.send(message, 0, message.length, uPORT, uHOST, function(err, bytes) {
+    // if (err) throw err;
+//});
+}
 
 //exports a listen function that can be called in other files to start our server.
 //This is called in server.js
@@ -68,8 +73,8 @@ decVolume();
 //Sends a packet to the BBG when this function is called
 function incVolume() {
 	//var message = new Buffer('incvolume');
-	var message = new Buffer('help');
-  sendToBBG(message);
+	//var message = new Buffer('help');
+  sendToBBG('help');
 }
 
 function decVolume() {

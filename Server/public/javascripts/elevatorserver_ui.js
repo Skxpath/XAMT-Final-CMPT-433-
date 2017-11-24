@@ -7,7 +7,6 @@ var socket = io.connect();
 // Make connection to server when web page is fully loaded.
 $(document).ready(function() {
 
-
 //When the button defined at $('#modediv #volumeDown') is clicked, emit a 'decvolume'
 //This is picked up by elevatorserver.js for further processing
 $('#modediv #volumeDown').click(function() {
@@ -20,8 +19,6 @@ socket.emit('decvolume');
 $('#modediv #volumeUp').click(function() {
 
 socket.emit('incvolume');
-
-});
 
 });
 
