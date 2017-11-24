@@ -15,7 +15,8 @@ var server = http.createServer(function(request, response) {
 var servPORT = 8088;
 
 //Starts the server, on PORT and logs a message to the console.
-server.listen(servPORT, function() { console.log("Server listening on port " + servPORT);
+server.listen(servPORT, function() {
+  console.log("Server listening on port " + servPORT);
 });
 
 //More boilerplate code given to us by the instructor
@@ -37,7 +38,6 @@ fs.exists(absPath, function(exists) {
     } else {
       send404(response);
     }
-
   });
 
 }
