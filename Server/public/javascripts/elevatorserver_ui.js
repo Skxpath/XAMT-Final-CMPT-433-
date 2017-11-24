@@ -7,13 +7,9 @@ var socket = io.connect();
 // Make connection to server when web page is fully loaded.
 $(document).ready(function() {
 
-/*
-$('#error-box').show();
-$('#error-box #error-text').text('vol down');
-$('#error-box #error-text').text('vol up');
 
-*/
-//Volume down
+//When the button defined at $('#modediv #volumeDown') is clicked, emit a 'decvolume'
+//This is picked up by elevatorserver.js for further processing
 $('#modediv #volumeDown').click(function() {
 
 socket.emit('decvolume');
@@ -24,58 +20,12 @@ socket.emit('decvolume');
 $('#modediv #volumeUp').click(function() {
 
 socket.emit('incvolume');
-});
-
-//Tempo down
-$('#modediv #tempoDown').click(function() {
-
-socket.emit('dectempo');
-});
-
-//Tempo up
-$('#modediv #tempoUp').click(function() {
-
-socket.emit('inctempo');
-});
-
-//Drum sound #1
-$('#modediv #sound1').click(function() {
-
-socket.emit('playsound1');
-});
-
-//Drum sound #2
-$('#modediv #sound2').click(function() {
-
-socket.emit('playsound2');
-});
-
-//Drum sound #3
-$('#modediv #sound3').click(function() {
-
-socket.emit('playsound3');
-});
-
-//Mode #1 - None
-$('#modediv #modeNone').click(function() {
-socket.emit("setmode0");
 
 });
 
-//Mode #2 - Rock Beat
-$('#modediv #modeRock1').click(function() {
-socket.emit("setmode1");
-
 });
 
-//Mode #3 - Alternative
-$('#modediv #modeRock2').click(function() {
-socket.emit("setmode2");
-
-});
-
-
-
+//Emits a getvolume when called
   function getVolume() {
     socket.emit('getvolume');
   }
@@ -92,11 +42,14 @@ socket.emit("setmode2");
     socket.emit('getuptime');
   }
 
+//Calls the defined functions above at an interval of 1000ms.
   var checkvol = setInterval(getVolume, 1000);
   var checktempo = setInterval(getTempo, 1000);
   var checkmode = setInterval(getMode, 1000);
   var checkuptime = setInterval(getUptime, 1000);
 
+//When elevatorserver_ui.js picks up a 'volume' from elevatorserver.js
+//Change the value defined at $('#modediv #volumeid') to result, the data included with the volume packet recieved
 socket.on('volume', function(result) {
     $('#modediv #volumeid').val(result);
 })
@@ -104,6 +57,7 @@ socket.on('volume', function(result) {
 socket.on('tempo', function(result) {
     $('#modediv #tempoid').val(result);
 })
+
 
 socket.on('mode', function(result) {
 
@@ -122,9 +76,8 @@ var mode = Number(result);
   default:
       break;
   }
-
-
 })
+
 
 socket.on('uptime', function(result) {
     $('#status #uptimeid').text(result);

@@ -56,9 +56,9 @@ function sendFile(response, filePath, fileContents) {
   response.writeHead(200, {"content-type": mime.getType(path.basename(filePath))});
 
 response.end(fileContents);
+
 }
 
 
-
-var beatServer = require('./lib/beatbox_server');
-beatServer.listen(server);
+var elevatorServer = require('./lib/elevatorserver');
+elevatorServer.listen(server);

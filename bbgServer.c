@@ -138,11 +138,15 @@ static void processCommand(char* command, int socketDescriptor, struct sockaddr_
   else if (isThisCommand(command, COMMAND_GET_ANGLE)) {
     sprintf(replyBuffer, "angle %lf", AccelerationListener_getAngle());
 	}
-
+	else if (isThisCommand(command, "incvolume")) {
+		sprintf(replyBuffer, "Inc volume called!\n");
+	}
 	else if (isThisCommand(command, COMMAND_STOP)) {
 		sprintf(replyBuffer, "Program terminating.\n");
 		isShuttingDown = true;
 	}
+
+
 
 	else {
 		sprintf(replyBuffer, "Unknown command. Type 'help' for command list.\n");
