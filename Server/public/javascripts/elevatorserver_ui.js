@@ -75,7 +75,6 @@ var mode = Number(result);
   }
 })
 
-
 socket.on('uptime', function(result) {
     $('#status #uptimeid').text(result);
 })

@@ -9,9 +9,8 @@ var socketio = require('socket.io');
 var io;
 var socket;
 
-//UDP Socket information to connect to our BBG.
+//TCP Socket information to connect to our BBG.
 //This is the destination we are trying to send to from our server (The address:port of the BBG)
-//TODO: Change to TCP
 var uPORT = 17433;
 var uHOST = '192.168.7.2';
 
@@ -26,6 +25,7 @@ client.connect(uPORT, uHOST, function() {
 
 });
 
+//TODO: Make console.log show what the BBG returns to us for debugging purposes
 client.on('message', function(msg) {
   console.log(`${msg}`);
 
@@ -35,12 +35,9 @@ strcast = msg.toString();
 
 });
 
-//Sends a UDP packet to BBG
+//Sends a TCP packet to BBG
 function sendToBBG(message) {
 	client.write(message);
-  //client.send(message, 0, message.length, uPORT, uHOST, function(err, bytes) {
-    // if (err) throw err;
-//});
 }
 
 //exports a listen function that can be called in other files to start our server.
@@ -72,8 +69,6 @@ decVolume();
 
 //Sends a packet to the BBG when this function is called
 function incVolume() {
-	//var message = new Buffer('incvolume');
-	//var message = new Buffer('help');
   sendToBBG('help');
 }
 
