@@ -20,16 +20,16 @@ var client = new net.Socket();
 client.connect(uPORT, uHOST, function() {
 
     console.log('CONNECTED TO: ' + uHOST + ':' + uPORT);
-    // Write a message to the socket as soon as the client is connected, the server will receive it as message from the client
+    // Write a messagewrite to the socket as soon as the client is connected, the server will receive it as message from the client
     client.write('help');
 
 });
 
 //TODO: Make console.log show what the BBG returns to us for debugging purposes
 client.on('message', function(msg) {
-  console.log(`${msg}`);
 
-strcast = msg.toString();
+	var strcast = msg.toString('utf8');
+	console.log("Recieved from BBG: " + strcast);
 
 	processCommand(strcast);
 
@@ -69,7 +69,7 @@ decVolume();
 
 //Sends a packet to the BBG when this function is called
 function incVolume() {
-  sendToBBG('help');
+  sendToBBG('incvolume');
 }
 
 function decVolume() {

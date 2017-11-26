@@ -12,7 +12,7 @@
 #include <errno.h>
 #include <arpa/inet.h>
 
-#define SERV_PORT 8088
+#define SERV_PORT 12345
 #define MAX_MESSAGE_LENGTH 1024
 #define SERV_ADDR "192.168.7.1"
 
@@ -41,22 +41,16 @@ static void* bbgClient_thread(void *args)
   struct sockaddr_in servaddr;
 
   // Construct socket
-  int socket_desc = socket(AF_INET, SOCK_STREAM, 0);
+  int socket_desc = socket(PF_INET, SOCK_DGRAM, 0);
 
   memset(&servaddr, 0, sizeof(servaddr));
   servaddr.sin_family = AF_INET;
   servaddr.sin_addr.s_addr= inet_addr(SERV_ADDR);
   servaddr.sin_port =  htons(SERV_PORT);
+  bind(socket_desc, (struct sockaddr_in*) &servaddr, sizeof(servaddr));
 
   // Repeatedly connect to server to update data while stopFlag is not set
   while(!stopFlag){
-
-    // Connect to server & check if connection is successful
-    if(connect(socket_desc, (struct sockaddr *) &servaddr, sizeof(servaddr)) < 0) {
-      perror("ERROR: Cannot connect to server.\n");
-      sleep(10);
-      continue;
-    }
 
     // Reset message buffer
     memset(msg_out, 0, strlen(msg_out));
@@ -83,12 +77,14 @@ static void* bbgClient_thread(void *args)
     // Free memory allocated by AccelerationListener_getAccelOutput();
     free(accel);
 
-    // Close connection to server
-    close(socket_desc);
 
     // Wait 1s before sending next update
     sleep(1);
    }
+
+
+  // Close connection to server
+  close(socket_desc);
 
    // Terminate thread when stopFlag is set
    pthread_exit(0);

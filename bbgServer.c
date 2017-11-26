@@ -98,6 +98,7 @@ static void *listeningThread(void *args)
 
 			// Transmit a reply (if desired):
 			if (strnlen(replyBuffer, REPLY_BUFFER_SIZE) > 0) {
+				printf("Sending: %s\n", replyBuffer);
 				send(client_socket, replyBuffer, strnlen(replyBuffer, REPLY_BUFFER_SIZE), 0);
 			}
 		}
@@ -118,7 +119,7 @@ _Bool isThisCommand(char* message, const char* command)
 
 static void processCommand(char* command, int socketDescriptor, struct sockaddr_in *pSin)
 {
-	replyBuffer[0] = 0;
+	replyBuffer[0] = '\0';
 
 	// Extract the value from the message:
 	if (isThisCommand(command, COMMAND_HELP)) {
