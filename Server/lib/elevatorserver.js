@@ -1,99 +1,57 @@
-/*
-Code workflow:
-UI has buttons which when clicked emit a packet (elevatorserver_ui.js)
-This packet is picked up by elevatorserver.js, which then processes the information and sends the packet to our BBG server
-elevatorserver.js handles both listening and sending to the BBG code.
- */
+"use strict";
 
 var socketio = require('socket.io');
 var io;
-var socket;
+var dgram = require('dgram');
 
-//TCP Socket information to connect to our BBG.
-//This is the destination we are trying to send to from our server (The address:port of the BBG)
-var uPORT = 17433;
-var uHOST = '192.168.7.2';
-
-//Definition of our socket to send and listen to messages from the BBG. (Where the BBG sends to, so we can hear it)
-var net = require('net');
-var client = new net.Socket();
-client.connect(uPORT, uHOST, function() {
-
-    console.log('CONNECTED TO: ' + uHOST + ':' + uPORT);
-    // Write a messagewrite to the socket as soon as the client is connected, the server will receive it as message from the client
-    client.write('help');
-
-});
-
-//TODO: Make console.log show what the BBG returns to us for debugging purposes
-client.on('message', function(msg) {
-
-	var strcast = msg.toString('utf8');
-	console.log("Recieved from BBG: " + strcast);
-
-	processCommand(strcast);
-
-});
-
-//Sends a TCP packet to BBG
-function sendToBBG(message) {
-	client.write(message);
-}
-
-//exports a listen function that can be called in other files to start our server.
-//This is called in server.js
 exports.listen = function(server) {
-	io = socketio.listen(server);
-
-	io.sockets.on('connection', function(soc) {
-
-		handleCommand(soc);
-		socket = soc;
-
-	});
+  io = socketio.listen(server);
+  io.sockets.on('connection', function(socket) {
+    handleCommand(socket);
+  });
 };
 
-//When the UI gets a click on a button, it emits a packet
-//We handle the emitted packet here
 function handleCommand(socket) {
+  var errorTimer = setTimeout(function() {
+    socket.emit("error_response", "UDP socket closed");
+  }, 5000);
 
-socket.on('incvolume', function(data){
-incVolume();
-	});
+  socket.on('udp', function(command) {
 
-socket.on('decvolume', function(data){
-decVolume();
-	});
+    var PORT = 12345;
+    var HOST = '192.168.7.2';
+    var buffer = new Buffer(command + "\n");
 
+    var client = dgram.createSocket('udp4');
+    client.send(buffer, 0, buffer.length, PORT, HOST, function(err, bytes) {
+      if (err) {
+        throw err;
+      }
+
+      client.on('listening', function() {
+        var address = client.address();
+        console.log('UDP Client: listening on ' + address.address + ":" + address.port);
+      });
+
+      client.on('message', function(message, remote) {
+        console.log("UDP Client: message Rx" + remote.address + ':' + remote.port +' - ' + message);
+
+        var reply = message.toString('utf8');
+        socket.emit('commandReply', reply);
+
+        client.close();
+        clearTimeout(errorTimer);
+        errorTimer = setTimeout(function() {
+          socket.emit("error_response", "Udp socket closed");
+        }, 5000);
+      });
+
+      client.on("UDP Client: close", function() {
+        socket.emit("error_response", "UDP closed");
+      });
+      client.on("UDP Client: error", function(err) {
+        socket.emit("error_response", "UDP error: " + err);
+      });
+    });
+  });
 };
-
-//Sends a packet to the BBG when this function is called
-function incVolume() {
-  sendToBBG('incvolume');
-}
-
-function decVolume() {
-  var message = new Buffer('decvolume');
-  sendToBBG(message);
-}
-
-//Called when our socket defined above recieves a message
-//This message is sent from our BBG, we process it and emit a packet with given string, and returnValue accordingly
-//The string and return value is picked up and processed in beatbox_ui.js, which then updates the UI
-function processCommand(msg) {
-
-	var words = msg.split(' ');
-	var operation = words[0];
-
-	var returnValue = words[1];
-
-	switch(operation) {
-
-	case 'volume':
-		socket.emit('volume', returnValue);
-		break;
-
-		default:
-		break;
-	}
-}

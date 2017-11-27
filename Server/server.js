@@ -1,10 +1,12 @@
-//Boilerplate code from 433 node.js notes
-var http = require('http');
+"use strict";
 
-//Creates an http server with a function to deal with certain url requests
+var http = require('http');
+var fs = require('fs');
+
 var server = http.createServer(function(request, response) {
   var filePath = false;
-  if (request.url == '/') { filePath = 'public/index.html';
+  if (request.url == '/') {
+    filePath = 'public/index.html';
   } else {
     filePath = 'public' + request.url;
   }
@@ -12,34 +14,25 @@ var server = http.createServer(function(request, response) {
   serveStatic(response, absPath);
 });
 
-var servPORT = 8088;
-
-//Starts the server, on PORT and logs a message to the console.
-server.listen(servPORT, function() {
-  console.log("Server listening on port " + servPORT);
+var PORT = 8088;
+server.listen(PORT, function() {
+  console.log("Server listeneing on port " + PORT);
 });
-
-//More boilerplate code given to us by the instructor
-var fs = require('fs');
 
 function serveStatic(response, absPath) {
-
-fs.exists(absPath, function(exists) {
-  if (exists) {
-
-    fs.readFile(absPath, function(err, data) {
-      if (err) {
-        send404(response);
-      } else {
-        sendFile(response, absPath, data);
-      }
-});
-
+  fs.exists(absPath, function(exists) {
+    if (exists) {
+      fs.readFile(absPath, function(err, data) {
+        if (err) {
+          send404(response);
+        } else {
+          sendFile(response, absPath, data);
+        }
+      });
     } else {
       send404(response);
     }
   });
-
 }
 
 function send404(response) {
@@ -50,15 +43,10 @@ function send404(response) {
 
 var mime = require('mime');
 var path = require('path');
-
 function sendFile(response, filePath, fileContents) {
-  //was mime.lookup, renamed to getType(). Might not compile depending on different versions.
-  response.writeHead(200, {"content-type": mime.getType(path.basename(filePath))});
-
-response.end(fileContents);
-
+  response.writeHead(200, {"content-type": mime.lookup(path.basename(filePath))});
+  response.end(fileContents);
 }
 
-
-var elevatorServer = require('./lib/elevatorserver');
-elevatorServer.listen(server);
+var beatboxServer = require('./lib/beatbox_server');
+beatboxServer.listen(server);
