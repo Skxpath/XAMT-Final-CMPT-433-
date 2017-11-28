@@ -47,7 +47,7 @@ static void* bbgClient_thread(void *args)
   servaddr.sin_family = AF_INET;
   servaddr.sin_addr.s_addr= inet_addr(SERV_ADDR);
   servaddr.sin_port =  htons(SERV_PORT);
-  bind(socket_desc, (struct sockaddr_in*) &servaddr, sizeof(servaddr));
+  bind(socket_desc, (struct sockaddr*) &servaddr, sizeof(servaddr));
 
   // Repeatedly connect to server to update data while stopFlag is not set
   while(!stopFlag){

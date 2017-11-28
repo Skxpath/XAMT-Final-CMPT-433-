@@ -7,6 +7,8 @@
 #include <netinet/in.h>
 #include <pthread.h>
 
+#include "accelerationListener.h"
+
 
 static pthread_t tid;
 static void* udp_pthread(void *args);
@@ -59,16 +61,38 @@ static void* udp_pthread(void *args)
     }
     args[i] = NULL; //precaution
 
-    // really long if-else statement for provessing messages
-    // ************************************************
-
-
-
-
-
-
-
-    // **********************************************
+    if (args[0] == NULL)
+    {
+      strcpy(answer, "Empty request\n");
+    }
+    else if (strcmp(args[0], 'help') == 0)
+    {
+      printf("recieved help request\n");
+  		strcpy(answer, "Accepted command examples:\n");
+  		strcat(answer, "accel -- Return raw accelerometer data.\n");
+      strcat(answer, "angle  -- Return elevator tilt angle.\n");
+  		strcat(answer, "stop -- cause the server program to end.\n");
+    }
+    else if (strcmp(args[0], 'incvolume') == 0)
+    {
+      strcpy(answer, "incvolume called\n");
+    }
+    else if (strcmp(answer, "angle") == 0)
+    {
+      strcpy(answer, "");
+      sprintf(replyBuffer, "angle %lf", AccelerationListener_getAngle());
+    }
+    else if (strcmp(answer, "accel") == 0)
+    {
+      strcpy(answer, "");
+      accel_output *accel = AccelerationListener_getAccelOutput();
+      sprintf(answer, "accel %d %d %d", accel->x, accel->y, accel->z);
+      free(accel);
+    }
+    else
+    {
+      strcpy(answer, "");
+    }
 
     sinLen = sizeof(sin);
     sendto(sock, answer, strlen(answer), 0,(struct sockaddr*) &sin, sinLen);

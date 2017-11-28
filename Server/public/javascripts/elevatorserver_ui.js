@@ -23,7 +23,22 @@ $(document).ready(function() {
     $('#error-box').hide();
     var args = reply.split(' ');
     var command = args[0];
-    $('#status').html(args[1]);
+    switch (command) {
+      case 'angle':
+        $('#angleText').html(reply);
+        break;
+      case 'accel':
+        $('#angleText').html(reply);
+        break;
+      case 'help':
+        $('#helpText').html(reply);
+        $('#helpText').show();
+        hideAfterTimeout();
+        break;
+      default:
+        break;
+    }
+    $('#status').html(reply);
   });
 
   socket.on('disconnect', function() {
@@ -47,3 +62,9 @@ function displayError(reply) {
       $('#error-box').hide();
     }, 10000);
   };
+
+  function hideAfterTimeout() {
+    var timer = setTimeout(function() {
+      $('#helpText').hide();
+    }, 10000);
+  }
