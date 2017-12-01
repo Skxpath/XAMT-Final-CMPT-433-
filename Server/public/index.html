@@ -1,20 +1,23 @@
 <!DOCTYPE html>
 <html lang='en'>
 <head>
-	<title>BeagleBone Beat-Box</title>
+	<title>XATM Elevator tracking</title>
 	<meta charset="UTF-8">
 	<link rel='stylesheet' href='stylesheets/style.css'></link>
 </head>
 
 <body>
 <form>
-	<h1>Elevator Node.js Central Server</h1>
-	<div> by XATM! (Winnie Zhang, Alex Zhang, Tony Yan, Matt Rudenko)</div>
+	<div id="header">
+		<h1>Elevator Node.js Central Server</h1>
+		<div> by XATM! (Winnie Zhang, Alex Zhang, Tony Yan, Matt Rudenko)</div>
+	</div>
 
 	<div id='content'>
 		<div id='status-box'>
 			<h2>Elevator Server Connection Status</h2>
 			<div id='status'>None yet...</div>
+			<div id="angleWarning"></div>
 		</div>
 
 		<div id='left-box'>

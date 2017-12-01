@@ -2,10 +2,20 @@ body {
 	width: 800px;
 	margin-left: auto;
 	margin-right: auto;
+	background-image: url("sand.jpg");
 }
 h1, h2 {
 	margin-bottom: 1px;
 	padding-bottom: 1px;
+}
+
+#header {
+	margin-right: 300px;
+	border: thin black solid;
+	padding-left: 10pt;
+	padding-right: 10pt;
+	padding-bottom: 10pt;
+	background-color: green;
 }
 
 #content {
@@ -19,6 +29,7 @@ h1, h2 {
 	padding-right: 10pt;
 	padding-bottom: 10pt;
 	min-height: 200pt;
+	background-color: green;
 }
 
 #status-box {
@@ -29,6 +40,21 @@ h1, h2 {
 	background-color: #f3f3f3;
 	padding-left: 10pt;
 	padding-right: 10pt;
+}
+
+#stopButton {
+	font-size: 14pt;
+	background-color: yellow;
+	color: red;
+	padding: 8pt;
+	border-radius: 10px;
+	border: none;
+}
+
+#angleWarning {
+	font-size: 24px;
+	font-style: bold;
+	color: black;
 }
 
 #error-box {
