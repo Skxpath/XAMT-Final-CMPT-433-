@@ -3,6 +3,7 @@
 
 #include "infoUpdater.h"
 #include "accel_drv.h"
+#include "infraRed.h"
 #include "sleeping.h"
 
 #include <stdlib.h>
@@ -10,7 +11,7 @@
 #include <pthread.h>
 #include <unistd.h>
 
-#define UPDATE_DELAY 40
+#define UPDATE_DELAY 20
 
 // Thread control variables
 static _Bool stopFlag = false;
@@ -24,6 +25,14 @@ static double total;
 static double angle;
 static _Bool accelerating;
 
+// Keep track of last 10 iterations of distance data obtained
+// and grab an average from said data
+static int IR_readings[10] = {0};
+static int IR_index = 0;
+
+// Variable for storing distance data read
+static double distance;
+
 // Pointer to store output of getReading function
 static accel_output* reading;
 
@@ -31,9 +40,19 @@ static accel_output* reading;
 // Thread for reader
 static void* update_thread(void* args)
 {
+  // Record first 10 iterations of sensor reading data
+  for (int i = 0; i < 10; i++){
+    IR_readings[i] = IRSensor_getVoltage0Reading();
+  }
 
   // Loop while stop flag is not set
   while(!stopFlag){
+    // Record IR distance sensor reading
+    IR_readings[IR_index] = IRSensor_getVoltage0Reading();
+    IR_index = (IR_index + 1) % 10;
+
+    // Record distance data collected
+    distance = IRSensor_getDistance();
 
     // getReading returns an accel_output type pointer
     reading = AccelDrv_getReading();
@@ -62,12 +81,12 @@ void Updater_init(void)
 {
   // Call initialization of AccelDrv functionalities.
   AccelDrv_init();
-
+  IRSensor_init();
+  sleep_msec(250);
   // Create thread for looping check of info
   // Note that after creating the thread, you may need to wait for a short
   // amount of time (a hundred ms or so?) before any data is accessible
   pthread_create(&update_tid, NULL, update_thread, NULL);
-  sleep_msec(100);
 }
 
 // Cleaup function for updater
@@ -117,4 +136,29 @@ double Updater_getAngle(void)
 _Bool Updater_isAccelerating(void)
 {
   return accelerating;
+}
+
+// Returns distance
+double Updater_getDistanceRaw(void)
+{
+  return distance;
+}
+
+// Second option for returning distance, which takes the average
+// of 10 readings before converting to distance
+double Updater_getDistanceStable(void)
+{
+  int totalReadings = 0;
+
+  // Add up all readings recorded
+  // Should technically be blocking,
+  // but would probably be too slow performance wise
+  for(int i = 0; i < 10; i++){
+    totalReadings += IR_readings[i];
+  }
+
+  // Take the average of the last 10 readings,
+  // then convert it to distance
+  double avgReading = ((double)totalReadings)/10;
+  return IRSensor_readingToDistance(avgReading);
 }

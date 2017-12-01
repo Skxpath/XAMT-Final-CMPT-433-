@@ -1,16 +1,23 @@
 // Demo application to read analog input voltage 0 on the BeagleBone
 // Assumes ADC cape already loaded:
 // root@beaglebone:/# echo BB-ADC > /sys/devices/platform/bone_capemgr/slots
+#include "i2c_drv.h" // For WriteToFile function
 #include <stdlib.h>
 #include <stdbool.h>
 #include <stdio.h>
 #include <time.h>
+#define SLOTS_FILE "/sys/devices/platform/bone_capemgr/slots"
 #define A2D_FILE_VOLTAGE1 "/sys/bus/iio/devices/iio:device0/in_voltage1_raw"
 #define A2D_VOLTAGE_REF_V 3.15
 #define A2D_MAX_READING 4095
 #define REGULATOR 0
 
-int getVoltage0Reading()
+void IRSensor_init(void)
+{
+	WriteToFile(SLOTS_FILE, "BB-ADC");
+}
+
+int IRSensor_getVoltage0Reading(void)
 {
 	// Open file
 	FILE *f = fopen(A2D_FILE_VOLTAGE1, "r");
@@ -26,22 +33,16 @@ int getVoltage0Reading()
 	if (itemsRead <= 0) {
 		printf("ERROR: Unable to read values from voltage input file.\n");
 		exit(-1);
-	}	
+	}
 
 	// Close file
 	fclose(f);
 	return a2dReading;
 }
 
-static void busyWait(long nanoseconds){
-	long seconds = 0;
-	struct timespec reqDelay = {seconds, nanoseconds};
-	nanosleep(&reqDelay, (struct timespec *) NULL);
-}
-
-static double reading_to_distance(double reading){
+double IRSensor_readingToDistance(double reading){
 	double voltage = (reading / A2D_MAX_READING) * A2D_VOLTAGE_REF_V;
-	printf(" %5.2fv =====>",voltage);
+	// printf(" %5.2fv =====>",voltage);
 	double distance = 0;
 	if (voltage > 3.15 || voltage <= 0.44){
 		//error
@@ -58,7 +59,7 @@ static double reading_to_distance(double reading){
 		distance = (3.4-voltage)/0.1;
 	}
 	else if (voltage <= 1.75 && voltage > 1.3){
-		//piece wise 3	
+		//piece wise 3
 		//voltage = distance * (-0.1) + 3.2;
 		distance = (3.2-voltage)/0.1;
 	}
@@ -91,14 +92,7 @@ static double reading_to_distance(double reading){
 	return distance - REGULATOR;
 }
 
-int main()
+double IRSensor_getDistance(void)
 {
-	while (true) {
-		int reading = getVoltage0Reading();
-		double distance;
-		distance = reading_to_distance((double)reading);
-		printf("Value %5d ==> %5.2fcm\n", reading, distance);
-		busyWait(300000000);
-	}
-	return 0;
+	return IRSensor_readingToDistance((double)IRSensor_getVoltage0Reading());
 }

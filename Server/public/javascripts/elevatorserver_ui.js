@@ -9,6 +9,8 @@ $(document).ready(function() {
   window.setInterval(function() {
     sendUDP('angle');
     sendUDP('accel');
+    sendUDP('distance');
+    sendUDP('stabledist');
   }, 1000);
 
   $('#stopButton').click(function() {
@@ -28,6 +30,12 @@ $(document).ready(function() {
       $('#xData').html("<b>X-Axis: </b>" + args[1] + "g");
       $('#yData').html("<b>Y-Axis: </b>" + args[2] + "g");
       $('#zData').html("<b>Z-Axis: </b>" + args[3] + "g");
+        break;
+      case 'distance':
+      $('#distText').html("<b>Current Distance: </b>" + args[1] + "cm");
+        break;
+      case 'stabledist':
+      $('#stabdistText').html("<b>Current Stable Distance: </b>" + args[1] + "cm");
         break;
       case 'help':
         $('#helpText').html(reply);
