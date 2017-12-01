@@ -26,16 +26,20 @@ static void* udp_pthread(void *ar)
   struct sockaddr_in sin;
   int sock;
   int success;
+
+  const int BBG_PORT = 12345;
   // initialize the socket
   sock = socket(PF_INET, SOCK_DGRAM, 0);
   sin.sin_family = AF_INET;
   sin.sin_addr.s_addr = htonl(INADDR_ANY);
-  sin.sin_port = htons(12345);
+  sin.sin_port = htons(BBG_PORT);
+
+  //checks if socket is successfully binded or not
   success = bind(sock, (struct sockaddr*) &sin, sizeof(sin));
 
   if(success < 0){
     printf("Server initialization failed\n");
-  }else{
+  } else {
     printf("Server initialization success\n");
   }
 
@@ -45,17 +49,14 @@ static void* udp_pthread(void *ar)
   char *saveptr = &saveptrVal; //for strtok_r function - taken from the man page
   char* args[10]; //for commands
   int argsSize; //self-explanatory
-  printf("entering do loop\n");
 
   do {
     static char message[1024];
     static char answer[1024];
     unsigned int sinLen = sizeof(sin);
     argsSize = 0;
-    printf("preparing to receive message\n");
-    int bytesRead = recvfrom(sock, message, 1024, 0, (struct sockaddr*) &sin, &sinLen);
+    recvfrom(sock, message, 1024, 0, (struct sockaddr*) &sin, &sinLen);
 
-    printf("Total of %d bytes read\n", bytesRead);
     // Remove carriage return from the end of user input.
     // Source of the idea: http://stackoverflow.com/questions/2693776/removing-trailing-newline-character-from-fgets-input
     char* retCh;
@@ -81,14 +82,6 @@ static void* udp_pthread(void *ar)
     {
       strcpy(answer, "Empty request\n");
     }
-    else if (strcmp(args[0], "help") == 0)
-    {
-      printf("recieved help request\n");
-  		strcpy(answer, "Accepted command examples:\n");
-  		strcat(answer, "accel -- Return raw accelerometer data.\n");
-      strcat(answer, "angle  -- Return elevator tilt angle.\n");
-  		strcat(answer, "stop -- cause the server program to end.\n");
-    }
     else if (strcmp(args[0], "accelerating") == 0)
     {
       strcpy(answer, "");
@@ -105,13 +98,11 @@ static void* udp_pthread(void *ar)
       strcpy(answer, "");
       sprintf(answer, "accel %lf %lf %lf", Updater_getAccelX(), Updater_getAccelY(), Updater_getAccelZ());
     }
-
     else if(strcmp(args[0], "stop") == 0){
       printf("Server terminating\n");
       strcpy(answer, "Stopping server.\n");
       shuttingDown = true;
     }
-
     else
     {
       strcpy(answer, "Invalid command\n");
@@ -120,7 +111,6 @@ static void* udp_pthread(void *ar)
     sinLen = sizeof(sin);
     printf("Sending: %s\n", answer);
     sendto(sock, answer, strlen(answer), 0,(struct sockaddr*) &sin, sinLen);
-    printf("message sent\n");
     for(int j = 0; j < i; j++) {
       free(args[j]);
     }
