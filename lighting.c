@@ -10,13 +10,13 @@ static void writeToFile(char *fileName, int gpioNum);
 void turn_on_Lighting(void){
 	//echo 49 > /sys/class/gpio/export
 	writeToFile(GPIO_EXPORT_PATH,GPIO_NUMBER);
-	writeToFile(GPIO_VALUE_PATH,0);
+	writeToFile(GPIO_VALUE_PATH, 0);
 }
 
 void turn_off_Lighting(void){
 	//echo 49 > /sys/class/gpio/export
 	writeToFile(GPIO_EXPORT_PATH,GPIO_NUMBER);
-	writeToFile(GPIO_VALUE_PATH,1);
+	writeToFile(GPIO_VALUE_PATH, 1);
 }
 
 int get_Lighting_state(void){
@@ -30,11 +30,11 @@ static int readFromFile(char *fileName){
 		printf("ERROR: Unable to open file (%s) for read\n", fileName);
 		exit(-1);
 	}
-	
-	//read integer
-	fscanf(pfile, "%d", &boo);  
 
-	//Close the file 
+	//read integer
+	fscanf(pfile, "%d", &boo);
+
+	//Close the file
 	fclose(pfile);
 	return boo;
 }
@@ -53,4 +53,3 @@ static void writeToFile(char *fileName, int value){
 	// Close the file using fclose():
 	fclose(pfile);
 }
-

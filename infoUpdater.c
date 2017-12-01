@@ -1,10 +1,8 @@
-// Note to Matt: Do NOT include this file in project Makefile
-// but do read over it to see how to use functions
-
 #include "infoUpdater.h"
 #include "accel_drv.h"
 #include "infraRed.h"
 #include "sleeping.h"
+#include "lighting.h"
 
 #include <stdlib.h>
 #include <stdio.h>
@@ -12,6 +10,17 @@
 #include <unistd.h>
 
 #define UPDATE_DELAY 20
+
+
+#define HIGHEST_FLOOR 2
+#define LOWEST_FLOOR -1
+
+#define FLOOR_DIST_THRESHOLD (2.5)
+
+
+static int num_floors = HIGHEST_FLOOR - LOWEST_FLOOR;
+static double *floor_distances;
+static float *floor_mapping;
 
 // Thread control variables
 static _Bool stopFlag = false;
@@ -30,12 +39,41 @@ static _Bool accelerating;
 static int IR_readings[10] = {0};
 static int IR_index = 0;
 
+static _Bool lightsOn = false;
+static _Bool lightsPreferredOn = true;
+
 // Variable for storing distance data read
 static double distance;
+
+static float floor_number;
 
 // Pointer to store output of getReading function
 static accel_output* reading;
 
+
+static float distToFloor(double dist)
+{
+  for(int i=0; i < num_floors; i++){
+    if((i == 0) && (dist > (floor_distances[i] - FLOOR_DIST_THRESHOLD))){
+      return (floor_mapping[i] - 0.5);
+    }else if((dist <= (floor_distances[i] + FLOOR_DIST_THRESHOLD)) && (dist >= (floor_distances[i] - FLOOR_DIST_THRESHOLD))){
+      return floor_mapping[i];
+    }
+    else{
+      if(i == num_floors - 1){
+        return (floor_mapping[i] + 0.5);
+      }else if(dist > (floor_distances[i+1] + FLOOR_DIST_THRESHOLD)){
+        if(floor_mapping[i] == -1){
+          return 0.5;
+        }else{
+          return ((floor_mapping[i] + floor_mapping[i+1])/2);
+        }
+      }
+    }
+  }
+
+  return 0;
+}
 
 // Thread for reader
 static void* update_thread(void* args)
@@ -54,6 +92,8 @@ static void* update_thread(void* args)
     // Record distance data collected
     distance = IRSensor_getDistance();
 
+    floor_number = distToFloor(distance);
+
     // getReading returns an accel_output type pointer
     reading = AccelDrv_getReading();
 
@@ -68,6 +108,31 @@ static void* update_thread(void* args)
     // Free the reading pointer since malloc() was called in getReading
     free(reading);
 
+    for(int attempts = 0; attempts <= 10; attempts++){
+      // Check if lights are on according to GPIO files
+      lightsOn = (get_Lighting_state() + 1) % 2;
+
+      // If lights are off...
+      if(lightsOn != lightsPreferredOn){
+        // If already tried 10 consecutive times to turn lights back on without success
+        // Inform user of problem
+        if(attempts >=10){
+          // lighting_error_handling_function(); (not implemented)
+          printf("Lights not toggling properly\n");
+        }else{
+          // If haven't tried 10 times yet, try again
+          if(lightsPreferredOn){
+            turn_on_Lighting();
+          }else{
+            turn_off_Lighting();
+          }
+        }
+      }else{
+        // If lights already on, continue on with thread
+        break;
+      }
+    }
+
     // Wait for update_delay ms
     sleep_msec(UPDATE_DELAY);
   }
@@ -79,6 +144,23 @@ static void* update_thread(void* args)
 // Initialization of info updater
 void Updater_init(void)
 {
+  if(HIGHEST_FLOOR * LOWEST_FLOOR > 0){
+    num_floors++;
+  }
+
+  floor_distances = malloc((sizeof(double)) * num_floors);
+  floor_mapping = malloc((sizeof(float)) * num_floors);
+
+  // Hard code for floor info to use with demo
+  for(int fl = 0; fl < num_floors ; fl++){
+    floor_distances[(num_floors - 1 - fl)] = (double) (15 + (fl * 30));
+    if((HIGHEST_FLOOR < 0) || ((HIGHEST_FLOOR - fl) > 0)){
+      floor_mapping[(num_floors - 1 - fl)] = HIGHEST_FLOOR - fl;
+    }else{
+      floor_mapping[(num_floors - 1 - fl)] = HIGHEST_FLOOR - fl - 1;
+    }
+  }
+
   // Call initialization of AccelDrv functionalities.
   AccelDrv_init();
   IRSensor_init();
@@ -101,6 +183,9 @@ void Updater_cleanup(void)
 
   // Call cleanup function after code is done
   AccelDrv_cleanup();
+
+  free(floor_distances);
+  free(floor_mapping);
 }
 
 // Returns X-axis acceleration
@@ -161,4 +246,19 @@ double Updater_getDistanceStable(void)
   // then convert it to distance
   double avgReading = ((double)totalReadings)/10;
   return IRSensor_readingToDistance(avgReading);
+}
+
+_Bool Updater_getLightsState(void)
+{
+  return lightsOn;
+}
+
+void Updater_toggleLighting(_Bool turnOn)
+{
+  lightsPreferredOn = turnOn;
+}
+
+float Updater_getCurrentFloor(void)
+{
+  return floor_number;
 }

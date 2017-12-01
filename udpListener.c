@@ -117,6 +117,29 @@ static void* udp_pthread(void *ar)
       sprintf(answer, "stabledist %lf", Updater_getDistanceStable());
     }
 
+    else if (strcmp(args[0], "lights") == 0){
+      if(Updater_getLightsState()){
+        strcpy(answer, "lights ON");
+      }else{
+        strcpy(answer, "lights OFF");
+      }
+    }
+
+    else if (strcmp(args[0], "lightson") == 0){
+      Updater_toggleLighting(true);
+      strcpy(answer, "lightson processed");
+    }
+
+    else if (strcmp(args[0], "lightsoff") == 0){
+      Updater_toggleLighting(false);
+      strcpy(answer, "lightsoff processed");
+    }
+
+    else if (strcmp(args[0], "floor") == 0){
+      strcpy(answer, "");
+      sprintf(answer, "floor %f", Updater_getCurrentFloor());
+    }
+
     else if(strcmp(args[0], "stop") == 0){
       printf("Server terminating\n");
       strcpy(answer, "Stopping server.\n");

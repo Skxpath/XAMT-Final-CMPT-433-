@@ -30,4 +30,13 @@ _Bool Updater_isAccelerating(void);
 double Updater_getDistanceRaw(void);
 double Updater_getDistanceStable(void);
 
+// Get current state of lights
+_Bool Updater_getLightsState(void);
+
+// Function to toggle lights on/off
+void Updater_toggleLighting(_Bool turnOn);
+
+// Get current floor number of elevator
+float Updater_getCurrentFloor(void);
+
 #endif
