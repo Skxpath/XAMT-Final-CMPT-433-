@@ -32,6 +32,8 @@ static void* udp_pthread(void *ar)
   sin.sin_port = htons(12345);
   bind(sock, (struct sockaddr*) &sin, sizeof(sin));
 
+  printf("Server initialized successfully\n");
+
   int keepListening = 1;
   char* token; //for tokenizing the input
   char saveptrVal = '0';
@@ -52,6 +54,8 @@ static void* udp_pthread(void *ar)
     char* retCh;
     if ((retCh = strchr(message, '\n')) != NULL)
       *retCh = '\0';
+
+    printf("Recieved: %s\n", message);
 
     //tokenize the nput into separate commands
     token = strtok_r(message, " ", &saveptr);
@@ -98,6 +102,7 @@ static void* udp_pthread(void *ar)
     }
 
     sinLen = sizeof(sin);
+    printf("Sending: %s\n", answer);
     sendto(sock, answer, strlen(answer), 0,(struct sockaddr*) &sin, sinLen);
     for(int j = 0; j < i; j++) {
       free(args[j]);

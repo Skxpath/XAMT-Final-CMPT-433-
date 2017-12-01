@@ -48,5 +48,5 @@ function sendFile(response, filePath, fileContents) {
   response.end(fileContents);
 }
 
-var beatboxServer = require('./lib/beatbox_server');
-beatboxServer.listen(server);
+var elevatorServer = require('./lib/elevatorserver');
+elevatorServer.listen(server);
