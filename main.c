@@ -11,13 +11,13 @@
 int main()
 {
 	Updater_init();
-  UDP_init();
-  while(!UDP_isShuttingDown()) {
-    sleep_msec(300);
+  	UDP_init();
+  	while(!UDP_isShuttingDown()) {
+   		sleep_msec(300);
   }
 	//struct timespec thirtySeconds = {sec, 0};
 	//nanosleep(&thirtySeconds, (struct timespec *) NULL);
-  UDP_cleanup();
+  	UDP_cleanup();
 	Updater_cleanup();
 	return 0;
 }
