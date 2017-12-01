@@ -11,6 +11,8 @@ $(document).ready(function() {
     sendUDP('accel');
     sendUDP('distance');
     sendUDP('stabledist');
+    sendUDP('stabledist');
+	sendUDP('lights');
   }, 1000);
 
   $('#stopButton').click(function() {
@@ -42,6 +44,9 @@ $(document).ready(function() {
       case 'stabledist':
       $('#stabdistText').html("<b>Current Stable Distance: </b>" + args[1] + "cm");
         break;
+	case 'lights':
+      $('#lightingText').html("<b>Current lighting kit status: </b>" + args[1]);
+        break;		
       case 'help':
         $('#helpText').html(reply);
         $('#helpText').show();
