@@ -4,18 +4,16 @@ var socket = io.connect();
 
 $(document).ready(function() {
   $('#error-box').hide();
-  $('#volumeid').val("80");
-  $('#tempoid').val("120");
+
   // Updating uptime every second
   window.setInterval(function() {
     sendUDP('angle');
     sendUDP('accel');
+    sendUDP('distance');
+    sendUDP('stabledist');
   }, 1000);
 
-  $('#modeNone').click(function() {
-    sendUDP('help');
-  });
-  $('#modeCustom').click(function() {
+  $('#stopButton').click(function() {
     sendUDP('stop');
   });
 
@@ -25,10 +23,19 @@ $(document).ready(function() {
     var command = args[0];
     switch (command) {
       case 'angle':
-        $('#angleText').html(reply);
+        $('#angleText').html("<b>Current Elevator Angle: </b>" + args[1] + "°");
         break;
       case 'accel':
-        $('#angleText').html(reply);
+      $('#accel-line').html("<b>Current Accelerometer Data: </b>");
+      $('#xData').html("<b>X-Axis: </b>" + args[1] + "g");
+      $('#yData').html("<b>Y-Axis: </b>" + args[2] + "g");
+      $('#zData').html("<b>Z-Axis: </b>" + args[3] + "g");
+        break;
+      case 'distance':
+      $('#distText').html("<b>Current Distance: </b>" + args[1] + "cm");
+        break;
+      case 'stabledist':
+      $('#stabdistText').html("<b>Current Stable Distance: </b>" + args[1] + "cm");
         break;
       case 'help':
         $('#helpText').html(reply);
@@ -38,7 +45,7 @@ $(document).ready(function() {
       default:
         break;
     }
-    $('#status').html(reply);
+    $('#status').html('Node server successfully connected to beaglebone!');
   });
 
   socket.on('disconnect', function() {
@@ -58,6 +65,7 @@ function sendUDP(command) {
 function displayError(reply) {
   $('#error-text').html(reply);
     $('#error-box').show();
+          $('#status').html('Connection to beaglebone server timed out.');
     var timer = setTimeout(function() {
       $('#error-box').hide();
     }, 10000);
