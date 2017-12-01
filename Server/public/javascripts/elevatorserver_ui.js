@@ -4,18 +4,14 @@ var socket = io.connect();
 
 $(document).ready(function() {
   $('#error-box').hide();
-  $('#volumeid').val("80");
-  $('#tempoid').val("120");
+
   // Updating uptime every second
   window.setInterval(function() {
     sendUDP('angle');
     sendUDP('accel');
   }, 1000);
 
-  $('#modeNone').click(function() {
-    sendUDP('help');
-  });
-  $('#modeCustom').click(function() {
+  $('#stopButton').click(function() {
     sendUDP('stop');
   });
 
@@ -25,10 +21,13 @@ $(document).ready(function() {
     var command = args[0];
     switch (command) {
       case 'angle':
-        $('#angleText').html(reply);
+        $('#angleText').html("<b>Current Elevator Angle: </b>" + args[1] + "°");
         break;
       case 'accel':
-        $('#accelText').html(reply);
+      $('#accel-line').html("<b>Current Accelerometer Data: </b>");
+      $('#xData').html("<b>X-Axis: </b>" + args[1] + "g");
+      $('#yData').html("<b>Y-Axis: </b>" + args[2] + "g");
+      $('#zData').html("<b>Z-Axis: </b>" + args[3] + "g");
         break;
       case 'help':
         $('#helpText').html(reply);
@@ -39,7 +38,6 @@ $(document).ready(function() {
         break;
     }
     $('#status').html('Node server successfully connected to beaglebone!');
-    //$('#status').html(reply);
   });
 
   socket.on('disconnect', function() {
