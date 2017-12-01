@@ -23,7 +23,6 @@
 #define I2CDRV_LINUX_BUS1_NAME "BB-I2C1"
 #define I2CDRV_LINUX_BUS2_NAME "BB-I2C2"
 
-static void WriteToFile(char* fileName, char* msg);
 
 void I2cDrv_init(i2c_device_t *pdevice)
 {
@@ -134,7 +133,7 @@ void I2cDrv_write_register_check_retry(i2c_device_t *pdevice, unsigned char reg_
 
 // Write to a file
 // Based on code provided in GPIO guide
-static void WriteToFile(char* fileName, char* msg)
+void WriteToFile(char* fileName, char* msg)
 {
 	//Open file
 	FILE *file = fopen(fileName, "w");

@@ -91,8 +91,11 @@ static void* udp_pthread(void *ar)
     }
     else if (strcmp(args[0], "accelerating") == 0)
     {
-      strcpy(answer, "");
-      sprintf(answer, "accelerating %d\n", Updater_isAccelerating());
+      if(Updater_isAccelerating()){
+        strcpy(answer, "accelerating true");
+      }else{
+        strcpy(answer, "accelerating false");
+      }
     }
 
     else if (strcmp(args[0], "angle") == 0)
@@ -104,6 +107,21 @@ static void* udp_pthread(void *ar)
     {
       strcpy(answer, "");
       sprintf(answer, "accel %lf %lf %lf", Updater_getAccelX(), Updater_getAccelY(), Updater_getAccelZ());
+    }
+
+    else if (strcmp(args[0], "totalaccel") == 0){
+      strcpy(answer, "");
+      sprintf(answer, "totalaccel %lf", Updater_getAccelTotal());
+    }
+
+    else if (strcmp(args[0], "distance") == 0){
+      strcpy(answer, "");
+      sprintf(answer, "distance %lf", Updater_getDistanceRaw());
+    }
+
+    else if (strcmp(args[0], "stabledist") == 0){
+      strcpy(answer, "");
+      sprintf(answer, "stabledist %lf", Updater_getDistanceStable());
     }
 
     else if(strcmp(args[0], "stop") == 0){

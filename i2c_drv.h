@@ -17,6 +17,7 @@ typedef struct {
 	int file_desc;
 } i2c_device_t;
 
+void WriteToFile(char* fileName, char* msg);
 
 void I2cDrv_init(i2c_device_t *pdevice);
 void I2cDrv_cleanup(i2c_device_t *pdevice);

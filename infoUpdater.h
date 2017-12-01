@@ -24,4 +24,10 @@ double Updater_getAngle(void);
 // Get whether or not the system is accelerating
 _Bool Updater_isAccelerating(void);
 
+// Get function for distance
+// Two options for raw reading (fast)
+// or stable reading (may be slightly inaccurate due to delay)
+double Updater_getDistanceRaw(void);
+double Updater_getDistanceStable(void);
+
 #endif
