@@ -8,7 +8,7 @@
 #include <pthread.h>
 #include <stdbool.h>
 
-#include "accelerationListener.h"
+#include "infoUpdater.h"
 #include "sleeping.h"
 
 static _Bool shuttingDown = false;
@@ -89,22 +89,21 @@ static void* udp_pthread(void *ar)
       strcat(answer, "angle  -- Return elevator tilt angle.\n");
   		strcat(answer, "stop -- cause the server program to end.\n");
     }
-    else if (strcmp(args[0], "incvolume") == 0)
+    else if (strcmp(args[0], "accelerating") == 0)
     {
-      strcpy(answer, "incvolume called\n");
+      strcpy(answer, "");
+      sprintf(answer, "accelerating %d\n", Updater_isAccelerating());
     }
 
     else if (strcmp(args[0], "angle") == 0)
     {
       strcpy(answer, "");
-      sprintf(answer, "angle %lf", AccelerationListener_getAngle());
+      sprintf(answer, "angle %lf", Updater_getAngle());
     }
     else if (strcmp(args[0], "accel") == 0)
     {
       strcpy(answer, "");
-      accel_output *accel = AccelerationListener_getAccelOutput();
-      sprintf(answer, "accel %d %d %d", accel->x, accel->y, accel->z);
-      free(accel);
+      sprintf(answer, "accel %lf %lf %lf", Updater_getAccelX(), Updater_getAccelY(), Updater_getAccelZ());
     }
 
     else if(strcmp(args[0], "stop") == 0){
@@ -115,7 +114,7 @@ static void* udp_pthread(void *ar)
 
     else
     {
-      strcpy(answer, "nein\n");
+      strcpy(answer, "Invalid command\n");
     }
 
     sinLen = sizeof(sin);

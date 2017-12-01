@@ -1,4 +1,4 @@
-SRC_C = main.c fileSys.c accelerationListener.c udpListener.c sleeping.c
+SRC_C = main.c fileSys.c infoUpdater.c i2c_drv.c accel_drv.c udpListener.c sleeping.c
 
 PUBDIR = $(HOME)/cmpt433/public/myApps
 OUTDIR = $(PUBDIR)

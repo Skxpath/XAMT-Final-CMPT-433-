@@ -1,6 +1,6 @@
 // NOTE: main() is only for testing - delete when implementing into a bigger project
 
-#include "accelerationListener.h"
+#include "infoUpdater.h"
 #include "udpListener.h"
 #include "sleeping.h"
 
@@ -10,7 +10,7 @@
 
 int main()
 {
-	AccelerationListener_init();
+	Updater_init();
   UDP_init();
   while(!UDP_isShuttingDown()) {
     sleep_msec(300);
@@ -18,6 +18,6 @@ int main()
 	//struct timespec thirtySeconds = {sec, 0};
 	//nanosleep(&thirtySeconds, (struct timespec *) NULL);
   UDP_cleanup();
-	AccelerationListener_cleanup();
+	Updater_cleanup();
 	return 0;
 }
