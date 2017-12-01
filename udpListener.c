@@ -6,19 +6,22 @@
 #include <unistd.h>
 #include <netinet/in.h>
 #include <pthread.h>
+#include <stdbool.h>
 
 #include "accelerationListener.h"
+#include "sleeping.h"
 
+static _Bool shuttingDown = false;
 
 static pthread_t tid;
-static void* udp_pthread(void *args);
+static void* udp_pthread(void *ar);
 
 void UDP_init()
 {
   pthread_create(&tid, NULL, &udp_pthread, NULL);
 }
 
-static void* udp_pthread(void *args)
+static void* udp_pthread(void *ar)
 {
   struct sockaddr_in sin;
   int sock;
@@ -65,7 +68,7 @@ static void* udp_pthread(void *args)
     {
       strcpy(answer, "Empty request\n");
     }
-    else if (strcmp(args[0], 'help') == 0)
+    else if (strcmp(args[0], "help") == 0)
     {
       printf("recieved help request\n");
   		strcpy(answer, "Accepted command examples:\n");
@@ -73,14 +76,14 @@ static void* udp_pthread(void *args)
       strcat(answer, "angle  -- Return elevator tilt angle.\n");
   		strcat(answer, "stop -- cause the server program to end.\n");
     }
-    else if (strcmp(args[0], 'incvolume') == 0)
+    else if (strcmp(args[0], "incvolume") == 0)
     {
       strcpy(answer, "incvolume called\n");
     }
     else if (strcmp(answer, "angle") == 0)
     {
       strcpy(answer, "");
-      sprintf(replyBuffer, "angle %lf", AccelerationListener_getAngle());
+      sprintf(answer, "angle %lf", AccelerationListener_getAngle());
     }
     else if (strcmp(answer, "accel") == 0)
     {
@@ -107,5 +110,11 @@ static void* udp_pthread(void *args)
 
 void UDP_cleanup()
 {
-  pthread_join(udp_pthread, NULL);
+  pthread_join(tid, NULL);
+  shuttingDown = true;
+}
+
+_Bool UDP_isShuttingDown()
+{
+  return shuttingDown;
 }

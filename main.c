@@ -1,8 +1,8 @@
 // NOTE: main() is only for testing - delete when implementing into a bigger project
 
 #include "accelerationListener.h"
-#include "bbgServer.h"
-#include "bbgClient.h"
+#include "udpListener.h"
+#include "sleeping.h"
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -10,18 +10,14 @@
 
 int main()
 {
-	//AccelerationListener_init();
-  bbgServer_startListening();
-  bbgClient_init();
-  printf("bbgServer and Client successfully started\n");
-  sleep(300);
-	printf("finishing\n");
-	long long sec = 2;
+	AccelerationListener_init();
+  UDP_init();
+  while(!UDP_isShuttingDown()) {
+    sleep_msec(300);
+  }
 	//struct timespec thirtySeconds = {sec, 0};
 	//nanosleep(&thirtySeconds, (struct timespec *) NULL);
-	sleep(sec);
-  bbgClient_cleanup();
-  bbgServer_cleanup();
-	//AccelerationListener_cleanup();
+  UDP_cleanup();
+	AccelerationListener_cleanup();
 	return 0;
 }

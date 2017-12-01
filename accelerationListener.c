@@ -1,5 +1,6 @@
 #include "fileSys.h"
 #include "accelerationListener.h"
+#include "sleeping.h"
 
 #include <stdio.h>
 #include <unistd.h>
@@ -53,7 +54,6 @@ void AccelerationListener_init(void)
 	fileDesc = setupI2C(I2CDRV_LINUX_BUS, I2C_DEVICE);
 	writeReg(CTRL_REG,1);
 	pthread_create(&tid, NULL, background_thread, NULL);
-	AccelerationListener_listen();
 }
 
 static int setupI2C(char* bus, int addr)
@@ -94,24 +94,6 @@ static void writeReg(unsigned char addr, unsigned char value)
 
 void* background_thread(void* args)
 {
-	long long sec = 30;
-	struct timespec thirtySeconds = {sec, 0};
-	nanosleep(&thirtySeconds, (struct timespec *) NULL);
-	printf("time's up!\n");
-	run = 0;
-	pthread_exit(0);
-}
-
-
-void AccelerationListener_cleanup(void)
-{
-	run = false;
-	printf("cleanup\n");
-	close(fileDesc);
-}
-
-void AccelerationListener_listen(void)
-{
 	long long sleepSeconds = SECONDS_DELAY;
 	long long sleepNanoSeconds = NANOSECONDS_DELAY;
 	struct timespec delay = {sleepSeconds, sleepNanoSeconds};
@@ -144,6 +126,16 @@ void AccelerationListener_listen(void)
 
 		nanosleep(&delay, (struct timespec *) NULL);
 	}
+	return NULL;
+}
+
+
+void AccelerationListener_cleanup(void)
+{
+	run = false;
+	printf("cleanup\n");
+	pthread_join(tid, NULL);
+	close(fileDesc);
 }
 
 static void readReg(unsigned char addr, unsigned char *value)
