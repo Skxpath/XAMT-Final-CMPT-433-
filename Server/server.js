@@ -44,7 +44,7 @@ function send404(response) {
 var mime = require('mime');
 var path = require('path');
 function sendFile(response, filePath, fileContents) {
-  response.writeHead(200, {"content-type": mime.lookup(path.basename(filePath))});
+  response.writeHead(200, {"content-type": mime.getType(path.basename(filePath))});
   response.end(fileContents);
 }
 
