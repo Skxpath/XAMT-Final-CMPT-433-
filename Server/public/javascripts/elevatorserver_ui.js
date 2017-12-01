@@ -5,7 +5,7 @@ var socket = io.connect();
 $(document).ready(function() {
   $('#error-box').hide();
 
-  // Updating uptime every second
+  // Updating accelerometer data every second
   window.setInterval(function() {
     sendUDP('angle');
     sendUDP('accel');
@@ -24,6 +24,11 @@ $(document).ready(function() {
     switch (command) {
       case 'angle':
         $('#angleText').html("<b>Current Elevator Angle: </b>" + args[1] + "°");
+        if (parseInt(args[1]) > 15) {
+          warning();
+        } else {
+          allGood();
+        }
         break;
       case 'accel':
       $('#accel-line').html("<b>Current Accelerometer Data: </b>");
@@ -64,15 +69,27 @@ function sendUDP(command) {
 
 function displayError(reply) {
   $('#error-text').html(reply);
-    $('#error-box').show();
-          $('#status').html('Connection to beaglebone server timed out.');
-    var timer = setTimeout(function() {
-      $('#error-box').hide();
-    }, 10000);
-  };
+  $('#error-box').show();
+        $('#status').html('Connection to beaglebone server timed out.');
+  var timer = setTimeout(function() {
+    $('#error-box').hide();
+  }, 10000);
+}
 
-  function hideAfterTimeout() {
-    var timer = setTimeout(function() {
-      $('#helpText').hide();
-    }, 10000);
-  }
+function hideAfterTimeout() {
+  var timer = setTimeout(function() {
+    $('#helpText').hide();
+  }, 10000);
+}
+
+function warning() {
+  $('#angleWarning').html('A dangerous tilt detected! Please inspect.');
+  $('#left-box').css({"background-color": "red"});
+  $('#status-box').css({"background-color": "red"});
+}
+
+function allGood() {
+  $('#angleWarning').html('');
+  $('#left-box').css({"background-color": "green"});
+  $('#status-box').css({"background-color": "#f3f3f3"});
+}
