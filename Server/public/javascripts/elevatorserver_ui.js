@@ -28,7 +28,7 @@ $(document).ready(function() {
         $('#angleText').html(reply);
         break;
       case 'accel':
-        $('#angleText').html(reply);
+        $('#accelText').html(reply);
         break;
       case 'help':
         $('#helpText').html(reply);
@@ -38,7 +38,8 @@ $(document).ready(function() {
       default:
         break;
     }
-    $('#status').html(reply);
+    $('#status').html('Node server successfully connected to beaglebone!');
+    //$('#status').html(reply);
   });
 
   socket.on('disconnect', function() {
@@ -58,6 +59,7 @@ function sendUDP(command) {
 function displayError(reply) {
   $('#error-text').html(reply);
     $('#error-box').show();
+          $('#status').html('Connection to beaglebone server timed out.');
     var timer = setTimeout(function() {
       $('#error-box').hide();
     }, 10000);

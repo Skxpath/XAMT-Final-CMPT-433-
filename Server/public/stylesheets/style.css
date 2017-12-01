@@ -8,6 +8,7 @@ h1, h2 {
 	padding-bottom: 1px;
 }
 
+
 #content {
 	margin-top: 10pt;
 }
@@ -19,6 +20,14 @@ h1, h2 {
 	padding-right: 10pt;
 	padding-bottom: 10pt;
 	min-height: 200pt;
+}
+
+#a {
+    display: inline-block;
+}
+
+#b {
+    display: inline-block;
 }
 
 #status-box {
