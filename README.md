@@ -12,8 +12,8 @@
 
 ## How to run the project 
 make sure BBG is up and running.
-*$cd (somewhere)/finalProject
-*$make
-*$node server.js
-*#cd (somewhere)/public/myapp
-*#./elevator  
+* $cd (somewhere)/finalProject
+* $make
+* $node server.js
+* #cd (somewhere)/public/myapp
+* #./elevator  
