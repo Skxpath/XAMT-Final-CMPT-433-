@@ -12,6 +12,8 @@
 
 ## How to run the project 
 make sure BBG is up and running.
+make sure A2D is loaded 
+make sure LED is loaded and tested manually beforehand
 * $cd (somewhere)/finalProject
 * $make
 * $node server.js
